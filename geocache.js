@@ -2,7 +2,7 @@ var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'geocache'});
 
 var url = require('url');
-// var util = require('util');
+var util = require('util');
 // var assert = require('assert');
 // var vasync = require('vasync');
 var request = require('request');
@@ -20,10 +20,6 @@ var app = restify.createServer({
 	version: '1.0.0'
 });
 
-app.use(restify.acceptParser(app.acceptable));
-app.use(restify.queryParser());
-app.use(restify.bodyParser());
-
 app.get('/geo/:address',function(req, res, next){
 
 	var address = req.params.address;
@@ -35,7 +31,7 @@ app.get('/geo/:address',function(req, res, next){
 			log.warn('Temp block, not issuing new requests');
 			res.send({statusCode: 429});
 			return;
-			request(uri, function(err, result){
+			request(util.format(nominatim, address), function(err, result){
 				if (result.statusCode !== 200) {
 					log.error('Error geocoding: %s', address);
 					res.send(result);
