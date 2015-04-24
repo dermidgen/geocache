@@ -9,7 +9,9 @@ var request = require('request');
 var restify = require('restify');
 
 var nano = require('nano')('http://localhost:5984');
-var geocache = nano.use('geocache');
+var dbcache = nano.use('geocache');
+
+var listen = 8962;
 
 var nominatim = 'https://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1';
 
@@ -25,37 +27,37 @@ app.use(restify.bodyParser());
 app.get('/geo/:address',function(req, res, next){
 
 	var address = req.params.address;
-	log.info(address, req.params);
+	log.info('Checking address: %s', address);
 
-	geocache.get(address, function(err, body){
+	dbcache.get(address, function(err, body){
 		if (err) {
-			log.info('Not cached fetching %s',address);
-			log.info('Temp block, not issuing new requests');
+			log.info('Not cached fetching: %s',address);
+			log.warn('Temp block, not issuing new requests');
 			res.send({statusCode: 429});
 			return;
 			request(uri, function(err, result){
 				if (result.statusCode !== 200) {
-					log.info('Error geocoding %s', address);
+					log.error('Error geocoding: %s', address);
 					res.send(result);
 					return;
 				}
 
-				log.info('Fetched %s',address);
+				log.info('Fetched: %s',address);
 
 				var record = JSON.parse(result.body)[0];
-				geocache.insert(record, address, function(error, body, header){
+				dbcache.insert(record, address, function(error, body, header){
 					if (error) {
-						log.info(error, body, header);
+						log.error(error, body, header);
 					} else {
-						log.info('Cached %s',address);
+						log.info('Cached: %s',address);
 					}
 				});
 
-				log.info('Sending response %s',address);
+				log.info('Sending response: %s',address);
 				res.send(record);
 			});
 		} else {
-			log.info('Return from cache %s',address);
+			log.info('Return from cache: %s',address);
 			res.send(body);
 		}
 	});
@@ -63,6 +65,7 @@ app.get('/geo/:address',function(req, res, next){
 	return next();
 });
 
-app.listen(8962, function(err){
-	if (err) { console.trace(err); }
+app.listen(listen, function(err){
+	if (err) { log.trace(err); return; }
+	log.info('listening on port %s', listen);
 });
