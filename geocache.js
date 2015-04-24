@@ -1,58 +1,68 @@
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({name: 'geocache'});
+
 var url = require('url');
-var express = require('express');
-var bodyParser = require('body-parser');
-var app = new express();
-var http = require('http').createServer(app);
+// var util = require('util');
+// var assert = require('assert');
+// var vasync = require('vasync');
 var request = require('request');
-var debug = require('debug')('geocache');
+var restify = require('restify');
 
 var nano = require('nano')('http://localhost:5984');
 var geocache = nano.use('geocache');
 
-var http_port = 8962;
+var nominatim = 'https://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1';
 
-app.set('case sensitive routing', false);
-app.use('/geo',function(req, res){
-	var address = unescape(url.parse(req.url).path).replace('/','');
-	debug(address);
+var app = restify.createServer({
+	name: 'geocache',
+	version: '1.0.0'
+});
 
-	var uri = 'https://nominatim.openstreetmap.org/search?q='+address+'&format=json&polygon=1&addressdetails=1';
+app.use(restify.acceptParser(app.acceptable));
+app.use(restify.queryParser());
+app.use(restify.bodyParser());
+
+app.get('/geo/:address',function(req, res, next){
+
+	var address = req.params.address;
+	log.info(address, req.params);
 
 	geocache.get(address, function(err, body){
 		if (err) {
-			debug('Not cached fetching %s',address);
-			debug('Temp block, not issuing new requests');
-			res.status(200).set('Content-Type', 'application/json').send({statusCode: 429});
+			log.info('Not cached fetching %s',address);
+			log.info('Temp block, not issuing new requests');
+			res.send({statusCode: 429});
 			return;
 			request(uri, function(err, result){
 				if (result.statusCode !== 200) {
-					debug('Error geocoding %s', address);
-					res.status(200).set('Content-Type', 'application/json').send(result);
+					log.info('Error geocoding %s', address);
+					res.send(result);
 					return;
 				}
 
-				debug('Fetched %s',address);
+				log.info('Fetched %s',address);
 
 				var record = JSON.parse(result.body)[0];
 				geocache.insert(record, address, function(error, body, header){
 					if (error) {
-						debug(error, body, header);
+						log.info(error, body, header);
 					} else {
-						debug('Cached %s',address);
+						log.info('Cached %s',address);
 					}
 				});
 
-				debug('Sending response %s',address);
-				res.status(200).set('Content-Type', 'application/json').send(record);
+				log.info('Sending response %s',address);
+				res.send(record);
 			});
 		} else {
-			debug('Return from cache %s',address);
-			res.status(200).set('Content-Type', 'application/json').send(body);
+			log.info('Return from cache %s',address);
+			res.send(body);
 		}
 	});
 
+	return next();
 });
 
-
-http.listen(http_port);
-module.exports = app;
+app.listen(8962, function(err){
+	if (err) { console.trace(err); }
+});
