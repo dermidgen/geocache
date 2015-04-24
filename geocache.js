@@ -22,7 +22,7 @@ app.use('/geo',function(req, res){
 		if (err) {
 			debug('Not cached fetching %s',address);
 			debug('Temp block, not issuing new requests');
-			res.status(200).set('Content-Type', 'application/json').send({statusCode = 429});
+			res.status(200).set('Content-Type', 'application/json').send({statusCode: 429});
 			return;
 			request(uri, function(err, result){
 				if (result.statusCode !== 200) {
