@@ -15,7 +15,7 @@ var listen = 8962;
 
 var nominatim = 'https://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1';
 
-var app = restify.createServer({
+var app = module.exports = restify.createServer({
 	name: 'geocache',
 	version: '1.0.0'
 });
@@ -59,9 +59,4 @@ app.get('/geo/:address',function(req, res, next){
 	});
 
 	return next();
-});
-
-app.listen(listen, function(err){
-	if (err) { log.trace(err); return; }
-	log.info('listening on port %s', listen);
 });
