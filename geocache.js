@@ -1,11 +1,3 @@
-var cacheConfig = {
-	host: 'http://127.0.0.1',
-	port: 5984,
-	db: 'geocache',
-	init: true
-};
-
-var geocode = require('geocode', { cache: cacheConfig });
 var url = require('url');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -19,7 +11,6 @@ var geocache = nano.use('geocache');
 
 var http_port = 8962;
 
-
 app.set('case sensitive routing', false);
 app.use('/geo',function(req, res){
 	var address = unescape(url.parse(req.url).path).replace('/','');
@@ -30,6 +21,9 @@ app.use('/geo',function(req, res){
 	geocache.get(address, function(err, body){
 		if (err) {
 			debug('Not cached fetching %s',address);
+			debug('Temp block, not issuing new requests');
+			res.status(200).set('Content-Type', 'application/json').send({statusCode = 429});
+			return;
 			request(uri, function(err, result){
 				if (result.statusCode !== 200) {
 					debug('Error geocoding %s', address);
