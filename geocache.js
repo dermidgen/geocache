@@ -28,9 +28,9 @@ app.get('/geo/:address',function(req, res, next){
 	dbcache.get(address, function(err, body){
 		if (err) {
 			log.info('Not cached fetching: %s',address);
-			// log.warn('Temp block, not issuing new requests');
-			// res.send({statusCode: 429});
-			// return;
+			log.warn('Temp block, not issuing new requests');
+			res.send({statusCode: 429});
+			return;
 			request(util.format(nominatim, address), function(err, result){
 				if (result.statusCode !== 200) {
 					log.error('Error geocoding: %s', address);
