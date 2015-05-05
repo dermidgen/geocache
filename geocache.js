@@ -13,7 +13,6 @@ var dbcache = nano.use('geocache');
 
 var listen = 8962;
 
-var nominatim = 'https://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1';
 
 var app = module.exports = restify.createServer({
 	name: 'geocache',
@@ -21,7 +20,8 @@ var app = module.exports = restify.createServer({
 });
 
 function nominatim(address, callback) {
-	request(util.format(nominatim, address), function(err, result){
+	var url = 'https://nominatim.openstreetmap.org/search?q=%s&format=json&polygon=0&addressdetails=1';
+	request(util.format(url, address), function(err, result){
 		if (err || result.statusCode !== 200) {
 			log.error('Error geocoding: %s', address);
 			callback(err, result);
@@ -61,16 +61,13 @@ app.get('/geo/:address',function(req, res, next){
 			log.warn('Temp block, not issuing new requests');
 			res.send({statusCode: 429});
 			return;
-			request(util.format(nominatim, address), function(err, result){
-				if (err || result.statusCode !== 200) {
-					log.error('Error geocoding: %s', address);
+
+			nominatim(address, function(err, result){
+				if (err) {
 					res.send(result);
 					return;
 				}
 
-				log.info('Fetched: %s',address);
-
-				var record = JSON.parse(result.body)[0];
 				dbcache.insert(record, address, function(error, body, header){
 					if (error) {
 						log.error(error, body, header);
@@ -82,6 +79,7 @@ app.get('/geo/:address',function(req, res, next){
 				log.info('Sending response: %s',address);
 				res.send(record);
 			});
+			
 		} else {
 			log.info('Return from cache: %s',address);
 			res.send(body);
