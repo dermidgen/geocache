@@ -20,6 +20,36 @@ var app = module.exports = restify.createServer({
 	version: '1.0.0'
 });
 
+function nominatim(address, callback) {
+	request(util.format(nominatim, address), function(err, result){
+		if (err || result.statusCode !== 200) {
+			log.error('Error geocoding: %s', address);
+			callback(err, result);
+			return;
+		}
+
+		log.info('Fetched: %s',address);
+
+		try {
+			var record = JSON.parse(result.body)[0];
+		} catch (e) {
+			console.log('Unable to parse JSON response');
+			callback(e, null);
+			return;
+		}
+
+		callback(null, record);
+	});
+}
+
+function google(address, callback) {
+
+}
+
+function mapquest(address, callback) {
+
+}
+
 app.get('/geo/:address',function(req, res, next){
 
 	var address = req.params.address;
