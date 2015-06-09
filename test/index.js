@@ -11,7 +11,7 @@ module.exports = describe('Geocache', function(){
             .end(function(err, res, body){
                 if (err) throw err;
                 done();
-            })
+            });
         });
     });
 });

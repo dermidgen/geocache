@@ -32,13 +32,12 @@ function nominatim(address, callback) {
 
 		try {
 			var record = JSON.parse(result.body)[0];
+			callback(null, record);
 		} catch (e) {
 			console.log('Unable to parse JSON response');
 			callback(e, null);
-			return;
 		}
 
-		callback(null, record);
 	});
 }
 
@@ -60,9 +59,8 @@ app.get('/geo/:address',function(req, res, next){
 			log.info('Not cached fetching: %s',address);
 			log.warn('Temp block, not issuing new requests');
 			res.send({statusCode: 429});
-			return;
 
-			nominatim(address, function(err, result){
+			nominatim(address, function(err, result) {
 				if (err) {
 					res.send(result);
 					return;
