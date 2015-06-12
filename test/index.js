@@ -2,16 +2,34 @@ var hippie = require('hippie');
 var geocache = require('../geocache');
 
 module.exports = describe('Geocache', function(){
-    describe('/geo endpoint', function(){
-        it('returns a response from nominatim', function(done){
+    describe('Transactional requests', function(){
+        it('Can GET geocoded data for a single address', function(done){
             hippie(geocache)
             .json()
-            .get('/geo/28172 Via Del Cerro, San Juan Capistrano, CA 92675')
+            .get('/geo/1 Infinite Loop, Cupertino, CA 95014')
             .expectStatus(200)
             .end(function(err, res, body){
                 if (err) throw err;
                 done();
             })
+        });
+        it.skip('Can PUT geocoded data for a single address', function(done){
+            hippie(geocache)
+            .json()
+            .put('/geo/1 Infinite Loop, Cupertino, CA 95014')
+            .expectStatus(200)
+            .end(function(err, res, body){
+                if (err) throw err;
+                done();
+            })
+        });
+    });
+    describe('Batch requests', function(){
+        it.skip('Can GET geocoded data for a batch of addresses', function(done){
+            done();
+        });
+        it.skip('Can PUT geocoded data for a batch of addresses', function(done){
+            done();
         });
     });
 });

@@ -60,3 +60,15 @@ app.get('/geo/:address',function(req, res, next){
 
 	return next();
 });
+
+app.put('/geo/:address', function(req, res, next){
+	return next();
+});
+
+app.get('/geo/batch', function(req, res, next){
+	return next();
+});
+
+app.put('/geo/batch', function(req, res, next){
+	return next();
+});
