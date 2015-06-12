@@ -1,13 +1,32 @@
 {
   "name": "geocache",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Geolocation caching",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dermidgen/geocache.git"
+  },
+  "keywords": [
+    "geocode",
+    "geolocate",
+    "geo",
+    "cache"
+  ],
+  "bugs": {
+    "url": "https://github.com/dermidgen/geocache/issues"
+  },
+  "homepage": "https://github.com/dermidgen/geocache",
+  "engines": {
+    "node": ">=0.12"
+  },
   "dependencies": {
+    "addressit": "^1.2.1",
     "bunyan": "^1.3.5",
     "nano": "^6.1.2",
     "request": "^2.55.0",
-    "restify": "^3.0.2"
+    "restify": "^3.0.2",
+    "vasync": "^1.6.3"
   },
   "devDependencies": {
     "hippie": "^0.3.0",
@@ -16,6 +35,6 @@
   "scripts": {
     "test": "mocha test"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Danny Graham <good.midget@gmail.com>",
+  "license": "MIT"
 }
