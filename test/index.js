@@ -1,12 +1,16 @@
 var hippie = require('hippie');
 var geocache = require('../geocache');
 
+var good_address = '18 Mallard Irvine, CA 92604';
+var bad_address = '1 Infinite Loop, Cupertino, CA 95014';
+
 module.exports = describe('Geocache', function(){
     describe('Transactional requests', function(){
         it('Can GET geocoded data for a single address', function(done){
+            this.timeout(7000);
             hippie(geocache)
             .json()
-            .get('/geo/1 Infinite Loop, Cupertino, CA 95014')
+            .get('/geo/' + good_address)
             .expectStatus(200)
             .end(function(err, res, body){
                 if (err) throw err;
@@ -16,7 +20,7 @@ module.exports = describe('Geocache', function(){
         it.skip('Can PUT geocoded data for a single address', function(done){
             hippie(geocache)
             .json()
-            .put('/geo/1 Infinite Loop, Cupertino, CA 95014')
+            .put('/geo/' + good_address)
             .expectStatus(200)
             .end(function(err, res, body){
                 if (err) throw err;
