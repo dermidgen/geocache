@@ -8,7 +8,7 @@ Geocache comes as a RETS service and basic set of libraries. You can run the RES
 ```
 var geocache = require('geocache');
 var address = '1 Infinite Loop, Cupertino, CA 95014';
-geocache.get(address, function(res){
+geocache.get(address, function(res) {
   console.info(res);
 });
 ```
@@ -17,7 +17,7 @@ geocache.get(address, function(res){
 ```
 var geocache = 'http://localhost/geo';
 var address = '1 Infinite Loop, Cupertino, CA 95014';
-$.get(geocache + '/' + address, function(res){
+$.get(geocache + '/' + address, function(res) {
   console.info(res);
 });
 ```
