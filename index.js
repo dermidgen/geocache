@@ -1,6 +1,6 @@
 var bunyan = require('bunyan');
 var log = bunyan.createLogger({name: 'geocache'});
-var geocache = require('./geocache');
+var geocache = require('./lib/service');
 
 var port = process.env.HTTP_LISTEN || 8962;
 
