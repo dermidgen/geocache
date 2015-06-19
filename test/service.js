@@ -14,7 +14,7 @@ module.exports = describe('Geocache', function(){
             this.timeout(7000);
             hippie(geocache)
             .json()
-            .get('/geo/' + good_address)
+            .get('/geo/cache/' + good_address)
             .expectStatus(200)
             .end(function(err, res, body){
                 if (err) throw err;
